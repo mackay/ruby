@@ -1,0 +1,13 @@
+bottle==0.12.13
+bunch==1.0.1
+certifi==2017.11.5
+chardet==3.0.4
+colour==0.1.4
+decorator==4.1.2
+idna==2.6
+olefile==0.44
+peewee==2.10.2
+Pillow==4.3.0
+pygame==1.9.3
+requests==2.18.4
+urllib3==1.22
