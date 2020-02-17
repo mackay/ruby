@@ -81,11 +81,13 @@ class Ground(DynamicSprite):
 
     def update_from(self, world, elapsed_time):
         super(Ground, self).update_from(world, elapsed_time)
+        pixels = world.pixels_for_sprite(self)
+        pixel_len = len(pixels)
 
-        if self.ground_buffer is None or len(self.ground_buffer) != len(world.pixels):
-            self.ground_buffer = [ self.ground_color ] * len(world.pixels)
+        if self.ground_buffer is None or len(self.ground_buffer) != pixel_len:
+            self.ground_buffer = [ self.ground_color ] * pixel_len
 
-            for i in range(0, len(world.pixels)):
+            for i in range(0, pixel_len):
                 self.ground_buffer[i] = self.ground_color.copy()
 
                 picker = randint(0, 10)
@@ -257,7 +259,7 @@ class ExpandingSplotches(DynamicSprite):
         super(ExpandingSplotches, self).update_from(world, elapsed_time)
 
         while len(self.get_sprites()) < self.splotch_count:
-            self.add_sprite( ExpandingSplotches.generate_splotch(len(world.pixels)) )
+            self.add_sprite( ExpandingSplotches.generate_splotch(len(world.pixels_for_sprite(self))) )
 
     @classmethod
     def generate_splotch(cls, world_size, color=None, position=None):

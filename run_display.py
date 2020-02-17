@@ -59,8 +59,8 @@ if __name__ == "__main__":
     scene = World(PIXELS, print_fps=args.fps, enable_threading=enable_threading)
 
     if args.virtual:
-        from display.renderers.virtual import PyGameRenderer
-        scene.add_renderer( PyGameRenderer() )
+        from display.renderers.virtual import PyGameLinearRenderer
+        scene.add_renderer( PyGameLinearRenderer() )
     if args.led:
         from display.renderers.led import NeoPixelRenderer
         scene.add_renderer( NeoPixelRenderer() )

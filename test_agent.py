@@ -84,8 +84,8 @@ if __name__ == "__main__":
     world.add_sprite( Ground(ground_color=Ground.NIGHT_COLOR, brightness_variance=0.0) )
 
     if arg.virtual:
-        from display.renderers.virtual import PyGameRenderer
-        world.add_renderer( PyGameRenderer() )
+        from display.renderers.virtual import PyGameLinearRenderer
+        world.add_renderer( PyGameLinearRenderer() )
     if arg.led:
         from display.renderers.led import NeoPixelRenderer
         world.add_renderer( NeoPixelRenderer() )

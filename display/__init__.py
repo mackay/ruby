@@ -295,10 +295,13 @@ class RenderableContainer(SpriteContainer):
             self.render_last = timing_current
 
             for sprite in self.sprites:
-                sprite.render_to(self.pixels)
+                sprite.render_to( self.pixels_for_sprite(sprite) )
 
             for renderer in self.renderers:
                 renderer.render_buffer(self.pixels)
+
+    def pixels_for_sprite(self, sprite):
+        return self.pixels
 
     def destroy(self):
         super(RenderableContainer, self).destroy()

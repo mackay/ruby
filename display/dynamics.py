@@ -63,7 +63,7 @@ class RightDrift(Dynamic):
         if movement_gate < self.movement_chance:
             sprite.position += 1
 
-            if not sprite.is_in_buffer(world.pixels):
+            if not sprite.is_in_buffer(world.pixels_for_sprite(sprite)):
                 sprite.position = 0
 
 

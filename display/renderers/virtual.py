@@ -6,21 +6,13 @@ from display import Renderer
 
 
 class PyGameRenderer(Renderer):
-
-    def __init__(self, width=1200, height=40):
-        super(PyGameRenderer, self).__init__()
-        self.target_height = height
-        self.target_width = width
-
-        self.height = height
+    def __init__(self, width, height):
         self.width = width
+        self.height = height
+        super(PyGameRenderer, self).__init__()
 
     def setup(self, pixel_count, world):
         super(PyGameRenderer, self).setup(pixel_count, world)
-
-        self.height = self.target_height
-        self.width = ( self.target_width / pixel_count ) * pixel_count
-
         pygame.init()
 
         self.window = (self.width, self.height)
@@ -35,27 +27,45 @@ class PyGameRenderer(Renderer):
     def render_buffer(self, pixel_buffer):
         super(PyGameRenderer, self).render_buffer(pixel_buffer)
 
-        self.__process_pygame_events()
+        self._process_pygame_events()
 
         if self._is_buffer_changed(pixel_buffer):
-            pixel_width = self.width / len(pixel_buffer)
-            pixel_height = self.height
-
-            for idx, pixel in enumerate(pixel_buffer):
-                pygame.draw.rect( self.background,
-                                  self.__to_color(pixel),
-                                  ( idx*pixel_width, 0,
-                                    pixel_width, pixel_height) )
-
-                # self.background.set_at((0, idx), self.__to_color(pixel))
+            self._render_buffer_internal(pixel_buffer)
 
             self.screen.blit(self.background, (0, 0))
             pygame.display.flip()
 
-    def __to_color(self, pixel):
+    def _render_buffer_internal(self, pixel_buffer):
+        return
+
+    def _to_color(self, pixel):
         return (pixel.r, pixel.g, pixel.b, pixel.a)
 
-    def __process_pygame_events(self):
+    def _process_pygame_events(self):
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 self.run_enable = False
+
+
+class PyGameLinearRenderer(PyGameRenderer):
+
+    def __init__(self, width=1200, height=40):
+        self.target_height = height
+        self.target_width = width
+        super(PyGameLinearRenderer, self).__init__(width, height)
+
+    def setup(self, pixel_count, world):
+        self.height = self.target_height
+        self.width = ( self.target_width / pixel_count ) * pixel_count
+
+        super(PyGameLinearRenderer, self).setup(pixel_count, world)
+
+    def _render_buffer_internal(self, pixel_buffer):
+        pixel_width = self.width / len(pixel_buffer)
+        pixel_height = self.height
+
+        for idx, pixel in enumerate(pixel_buffer):
+            pygame.draw.rect( self.background,
+                              self._to_color(pixel),
+                              ( idx*pixel_width, 0,
+                                pixel_width, pixel_height) )
