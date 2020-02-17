@@ -9,6 +9,9 @@ log = logging.getLogger()
 from display.split import TwoLayerWorld
 from display.atmosphere import Sky, Stars, Ground, Rain, CloudCover
 from display.atmosphere import ExpandingSplotches
+from display.solid import SingleColor, OmbreColor, OuterInnterOmbre
+from display.solid import OmbreMergeToDynamic, OmbreMergeFromDynamic
+from display import Pixel
 
 from core.profile import start_profiler, stop_profiler
 
@@ -75,6 +78,38 @@ if __name__ == "__main__":
         if layer_indicator == "i":
             pixel_count = PIXELS - OUTER_PIXELS
             layer = TwoLayerWorld.INNER_TRACK
+
+        if "single" == target:
+            components = item.split("_")
+            color = Pixel( int(components[1]),
+                           int(components[2]),
+                           int(components[3]) )
+
+            scene.add_sprite( SingleColor( color ), layer )
+
+        if "ombre" in target:
+            components = item.split("_")
+            from_color = Pixel( int(components[1]),
+                                int(components[2]),
+                                int(components[3]) )
+
+            to_color = Pixel( int(components[4]),
+                              int(components[5]),
+                              int(components[6]) )
+
+            ombre_cls = OmbreColor
+            if "ombre-oi" == target:
+                ombre_cls = OuterInnterOmbre
+
+            sprite = ombre_cls(from_color, to_color)
+            # sprite.add_dynamic( OmbreMergeToDynamic(merge_time_ms=5*1000) )
+            sprite.add_dynamic( OmbreMergeFromDynamic(merge_time_ms=5*1000) )
+
+
+            scene.add_sprite( sprite, layer )
+
+        if "ombre-oi" == target:
+            scene.add_sprite
 
         if "sky" == target:
             scene.add_sprite( Sky(clouds=2, world_size=pixel_count), layer )
