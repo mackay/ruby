@@ -14,7 +14,7 @@ import logging
 logging.getLogger('peewee').setLevel(logging.INFO)
 logging.getLogger("peewee.pool").setLevel(logging.DEBUG)
 
-database = SqliteDatabase('detector.db')
+database = SqliteDatabase('ruby.db')
 
 
 class JSONField(TextField):
