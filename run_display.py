@@ -7,8 +7,8 @@ import logging
 log = logging.getLogger()
 
 from display import World
-from display.atmosphere import Sky, Stars, Ground, Rain, CloudCover
-from display.atmosphere import ExpandingSplotches
+from display.sprites.atmosphere import Sky, Stars, Ground, Rain, CloudCover
+from display.sprites.atmosphere import ExpandingSplotches
 
 from core.profile import start_profiler, stop_profiler
 

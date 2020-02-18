@@ -7,7 +7,7 @@ import time
 from agent.location import LocationAgent
 from agent.linear import LinearAgent1D
 from display import World, Pixel
-from display.atmosphere import Ground
+from display.sprites.atmosphere import Ground
 
 from core.profile import start_profiler, stop_profiler
 

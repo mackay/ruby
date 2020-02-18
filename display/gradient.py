@@ -1,3 +1,6 @@
+from display import Pixel
+import math
+
 # gradients based on http://bsou.io/posts/color-gradients-with-python
 
 def hex_to_RGB(hex):
@@ -115,6 +118,34 @@ def bezier_gradient(colors, n_out=100):
     ]
     # Return all points requested for gradient
     return color_dict(gradient)
+
+
+
+def pixel_gradient(from_color, to_color, n_pixels, to_shoulder=0, is_centered=False):
+    from_hex = RGB_to_hex([from_color.r, from_color.g, from_color.b])
+    to_hex = RGB_to_hex([to_color.r, to_color.g, to_color.b])
+
+    gradient_length = n_pixels - to_shoulder
+
+    rgb_colors = [ ]
+    if gradient_length > 2:
+        if is_centered:
+            gradient_length = _int_half_ceiling(gradient_length)
+        rgb_colors = [ hex_to_RGB(c) for c in bezier_gradient([from_hex, to_hex], gradient_length)["hex"] ]
+
+    if is_centered:
+        to_shoulder = _int_half_ceiling(to_shoulder)
+
+    gradient = [ Pixel(c[0], c[1], c[2]) for c in rgb_colors ] + [ to_color ] * to_shoulder
+
+    if is_centered:
+        for i in range( len(gradient) - 1, -1, -1) :
+            gradient.append(gradient[i])
+
+    return gradient
+
+def _int_half_ceiling(val):
+    return int(math.ceil(val / 2))
 
 
 # color_dict = linear_gradient("#FFC300","#581845")

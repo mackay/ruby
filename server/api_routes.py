@@ -6,7 +6,7 @@ from core.apiutil import require_fields, serialize_json, get_configuration
 from core.models import database
 from core.system import SystemBase
 
-from display.split import TwoLayerWorld
+from display.worlds.split import TwoLayerWorld
 
 import pickle
 import redis
@@ -118,7 +118,7 @@ def _sequence_from_colors(hex_colors, layer):
                 "duration_ms": 1,
                 "sprites": [
                     {
-                        "class_path": "display.solid.OuterInnterOmbre",
+                        "class_path": "display.sprites.ombre.OuterInnterOmbre",
                         "args": pixels,
                         "layer": layer
                     }

@@ -6,12 +6,14 @@ import time
 import logging
 log = logging.getLogger()
 
-from display.split import TwoLayerWorld
-from display.atmosphere import Sky, Stars, Ground, Rain, CloudCover
-from display.atmosphere import ExpandingSplotches
-from display.solid import SingleColor, OmbreColor, OuterInnterOmbre
-from display.solid import SequenceColor
-from display.solid import OmbreMergeToDynamic, OmbreMergeFromDynamic
+from display.worlds.split import TwoLayerWorld
+from display.sprites.atmosphere import Sky, Stars, Ground, Rain, CloudCover
+from display.sprites.atmosphere import ExpandingSplotches
+from display.sprites.solid import SingleColor
+from display.sprites.solid import SequenceColor
+from display.sprites.ombre import OmbreColor, OuterInnterOmbre
+
+from display.dynamics.ombre import OmbreMergeToDynamic, OmbreMergeFromDynamic
 from display import Pixel
 
 from agent.frame import RedisFrameAgent

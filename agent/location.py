@@ -2,7 +2,7 @@
 from agent import HTTPBeaconAgent
 
 from display import Pixel
-from display.atmosphere import ExpandingSplotches
+from display.sprites.atmosphere import ExpandingSplotches
 from display.sprites import Point
 from display.dynamics import Lifespan
 
