@@ -8,26 +8,11 @@ from core.system import SystemBase
 
 from display.worlds.split import TwoLayerWorld
 
-import pickle
 import redis
 import json
 
 import logging
 log = logging.getLogger()
-
-
-networks = None
-
-
-def load_networks():
-    networks = [ ]
-
-    config = get_configuration()
-    for network_file_source in config["networks"]:
-        with open(network_file_source, 'rb') as network:
-            networks.append( pickle.load(network) )
-
-    return networks
 
 
 @hook('before_request')
@@ -78,22 +63,13 @@ def present_sequence():
 @serialize_json()
 def present_outer():
     _publish_color( request.json["pixels"], TwoLayerWorld.OUTER_TRACK )
-    # colors = request.json["pixels"]
-    # sequence = json.dumps(_sequence_from_colors(colors, TwoLayerWorld.OUTER_TRACK))
-
-    # r = redis.Redis(host="localhost", port=6379, db=0)
-    # r.publish("ruby", sequence)
 
 
 @post('/presentation/inner', is_api=True)
 @serialize_json()
 def present_inner():
     _publish_color( request.json["pixels"], TwoLayerWorld.INNER_TRACK )
-    # colors = request.json["pixels"]
-    # sequence = json.dumps(_sequence_from_colors(colors, TwoLayerWorld.INNER_TRACK))
 
-    # r = redis.Redis(host="localhost", port=6379, db=0)
-    # r.publish("ruby", sequence)
 
 def _publish_color(colors, layer):
     if len(colors) == 1:
