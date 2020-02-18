@@ -152,17 +152,20 @@ if __name__ == "__main__":
             scene.add_sprite( ExpandingSplotches(), layer )
 
 
+    if args.redis:
+        agent = RedisFrameAgent(str(uuid.uuid4()), scene, args.redis)
+        agent.run()
+
     def signal_handler(signal, frame):
         print('\nStopping world run loop\n')
         scene.stop()
+        if agent:
+            agent.stop()
+
     signal.signal(signal.SIGINT, signal_handler)
 
     #track activity if option is set
     profiler = start_profiler() if args.profiler else None
-
-    if args.redis:
-        agent = RedisFrameAgent(str(uuid.uuid4()), scene, args.redis)
-        agent.run()
 
     scene.run( world_callback )
     while scene.run_enable:

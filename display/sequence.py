@@ -28,6 +28,7 @@ class SequenceWorld(World):
                 frame = self.frames[0]
                 self.frames = self.frames[1:]
                 self.active_frame_ms = frame["duration_ms"]
+
                 self._show_frame(frame)
 
         return super(SequenceWorld, self).update(elapsed_time_ms)
@@ -42,17 +43,17 @@ class SequenceWorld(World):
         for sprite in frame["sprites"]:
             sprite_impl = self._instance_from_class_object(sprite)
 
-            if "dynamics" not in sprite:
-                continue
-
-            for dynamic in sprite["dynamics"]:
-                dynamic_impl = self._instance_from_class_object(dynamic)
-                sprite_impl.add_dynamic(dynamic_impl)
+            if "dynamics" in sprite:
+                for dynamic in sprite["dynamics"]:
+                    dynamic_impl = self._instance_from_class_object(dynamic)
+                    sprite_impl.add_dynamic(dynamic_impl)
 
             if "layer" in sprite:
-                self.add_sprite( sprite, sprite["layer"])
+                self.add_sprite( sprite_impl, sprite["layer"])
             else:
-                self.add_sprite( sprite )
+                self.add_sprite( sprite_impl )
+
+        self._render_internal()
 
     def _instance_from_class_object(self, class_object):
         module_name, class_name = class_object["class_path"].rsplit(".", 1)

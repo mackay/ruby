@@ -138,15 +138,22 @@ OmbreColorManager = my.Class({
         var self = this;
         $(".btn.btn-ombre").click(function() {
             self.set_colors(
-                [ $(".outer-color-solid-lower").val(), $(".outer-color-solid-upper").val() ],
-                [ $(".inner-color-solid-lower").val(), $(".inner-color-solid-upper").val() ]
+                [ $(".inner-color-solid-lower").val(), $(".inner-color-solid-upper").val() ],
+                [ $(".outer-color-solid-lower").val(), $(".outer-color-solid-upper").val() ]
             );
         });
 
         $(".btn.btn-solid").click(function() {
             self.set_colors(
-                [ $(".outer-color-solid").val() ],
-                [ $(".inner-color-solid").val() ]
+                [ $(".inner-color-solid").val() ],
+                [ $(".outer-color-solid").val() ]
+            );
+        });
+
+        $(".btn.btn-blackout").click(function() {
+            self.set_colors(
+                [ "000000" ],
+                [ "000000" ]
             );
         });
     },

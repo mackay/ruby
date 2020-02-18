@@ -2,7 +2,7 @@ import uuid
 import threading
 import time
 
-from datetime import datetime
+from datetime import datetime, timedelta
 import logging
 
 from core.time import IDLE_MIN_MS
@@ -287,18 +287,22 @@ class RenderableContainer(SpriteContainer):
     def get_renderers(self):
         return self.renderers[:]
 
+    def render_next(self):
+        self.render_last = datetime.utcnow() - timedelta(seconds=self.render_ms_limit)
+
     def render(self):
         timing_current = datetime.utcnow()
         timing_elapsed = (timing_current - self.render_last).microseconds / 1000.
-
         if timing_elapsed >= self.render_ms_limit:
             self.render_last = timing_current
-
-            for sprite in self.sprites:
-                sprite.render_to( self.pixels_for_sprite(sprite) )
+            self._render_internal()
 
             for renderer in self.renderers:
                 renderer.render_buffer(self.pixels)
+
+    def _render_internal(self):
+        for sprite in self.sprites:
+            sprite.render_to( self.pixels_for_sprite(sprite) )
 
     def pixels_for_sprite(self, sprite):
         return self.pixels

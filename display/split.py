@@ -25,7 +25,6 @@ class TwoLayerWorld(SequenceWorld):
     def add_sprite(self, sprite, layer):
         if layer == self.INNER_TRACK:
             self.inner_sprite_id.append(sprite.id)
-
         return super(TwoLayerWorld, self).add_sprite(sprite)
 
     def remove_sprite(self, sprite, recurse=True):

@@ -22,6 +22,10 @@ class RedisFrameAgent(Agent):
         self.subscription = self.redis.pubsub(ignore_subscribe_messages=True)
         self.subscription.subscribe(self.key)
 
+    def _teardown(self):
+        if self.subscription:
+            self.subscription.close()
+
     def observe(self, elapsed_time_ms):
         incoming_message = self.subscription.get_message()
         if incoming_message:

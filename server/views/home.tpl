@@ -54,12 +54,15 @@
                 <div class="btn btn-default btn-sequence">Show Sequence</div>
             </div>
             <div class="col-md-6">
-                <h2>Solid Colors</h2>
+                <h2>Blackout</h2>
+                <div class="btn btn-default btn-blackout">Set</div>
+
+                <h2>Solid</h2>
                 <div>Outer Color: <input class="jscolor outer-color-solid" value="ff6961"></div>
                 <div>Inner Color: <input class="jscolor inner-color-solid" value="9b111e"></div>
                 <div class="btn btn-default btn-solid">Set Color</div>
 
-                <h2>Ombre Colors</h2>
+                <h2>Ombre</h2>
                 <div>Outer Color Lower: <input class="jscolor outer-color-solid-lower" value="ff6961"></div>
                 <div>Outer Color Upper: <input class="jscolor outer-color-solid-upper" value="ff6961"></div>
                 <div>Inner Color Lower: <input class="jscolor inner-color-solid-lower" value="9b111e"></div>
