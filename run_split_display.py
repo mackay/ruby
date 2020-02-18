@@ -10,11 +10,15 @@ from display.split import TwoLayerWorld
 from display.atmosphere import Sky, Stars, Ground, Rain, CloudCover
 from display.atmosphere import ExpandingSplotches
 from display.solid import SingleColor, OmbreColor, OuterInnterOmbre
+from display.solid import SequenceColor
 from display.solid import OmbreMergeToDynamic, OmbreMergeFromDynamic
 from display import Pixel
 
+from agent.frame import RedisFrameAgent
+
 from core.profile import start_profiler, stop_profiler
 
+import uuid
 import signal
 
 
@@ -44,6 +48,9 @@ if __name__ == "__main__":
 
     parser.add_argument('--outer-pixels', default="200",
                         help='Number of pixels in the outer layer')
+
+    parser.add_argument('--redis', default=None,
+                        help="Subscribe to a redis server on the localhost at default ports with supplied pubsub key")
 
     parser.add_argument('scene', default="o_grass,o_clouds,i_night,i_stars", nargs='?',
                         help='Which scenes to composite.  Choices include: sky, grass, dirt, night, rain, clouds, stars')
@@ -85,7 +92,9 @@ if __name__ == "__main__":
                            int(components[2]),
                            int(components[3]) )
 
-            scene.add_sprite( SingleColor( color ), layer )
+            # scene.add_sprite( SingleColor( color ), layer )
+            scene.add_sprite( SequenceColor( [color] ), layer )
+
 
         if "ombre" in target:
             components = item.split("_")
@@ -104,12 +113,19 @@ if __name__ == "__main__":
             sprite = ombre_cls(from_color, to_color)
             # sprite.add_dynamic( OmbreMergeToDynamic(merge_time_ms=5*1000) )
             sprite.add_dynamic( OmbreMergeFromDynamic(merge_time_ms=5*1000) )
-
-
             scene.add_sprite( sprite, layer )
 
-        if "ombre-oi" == target:
-            scene.add_sprite
+        if "sequence" == target:
+            scene.add_sprite( SequenceColor([
+                Pixel(246,215,176),
+                Pixel(118,182,196),
+                Pixel(0, 189, 254),
+                Pixel(0, 189, 254),
+                Pixel(255, 204, 51),
+                Pixel(0, 189, 254),
+                Pixel(118,182,196),
+                Pixel(246,215,176)
+                ]), layer)
 
         if "sky" == target:
             scene.add_sprite( Sky(clouds=2, world_size=pixel_count), layer )
@@ -143,6 +159,10 @@ if __name__ == "__main__":
 
     #track activity if option is set
     profiler = start_profiler() if args.profiler else None
+
+    if args.redis:
+        agent = RedisFrameAgent(str(uuid.uuid4()), scene, args.redis)
+        agent.run()
 
     scene.run( world_callback )
     while scene.run_enable:

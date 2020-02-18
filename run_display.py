@@ -12,7 +12,10 @@ from display.atmosphere import ExpandingSplotches
 
 from core.profile import start_profiler, stop_profiler
 
+from agent.frame import RedisFrameAgent
 import signal
+import uuid
+
 
 
 def world_callback(world):
@@ -46,6 +49,8 @@ if __name__ == "__main__":
     parser.add_argument('scene', default="grass,clouds", nargs='?',
                         help='Which scenes to composite.  Choices include: sky, grass, dirt, night, rain, clouds, stars')
 
+    parser.add_argument('--redis', default=None,
+                        help="Subscribe to a redis server on the localhost at default ports with supplied pubsub key")
 
     args = parser.parse_args(sys.argv[1:])
 
@@ -95,7 +100,6 @@ if __name__ == "__main__":
     if "expand" in args.scene:
         scene.add_sprite( ExpandingSplotches() )
 
-
     def signal_handler(signal, frame):
         print('\nStopping world run loop\n')
         scene.stop()
@@ -104,7 +108,12 @@ if __name__ == "__main__":
     #track activity if option is set
     profiler = start_profiler() if args.profiler else None
 
+    if args.redis:
+        agent = RedisFrameAgent(str(uuid.uuid4()), scene, args.redis)
+        agent.run()
+
     scene.run( world_callback )
+
     while scene.run_enable:
         time.sleep(1)
 

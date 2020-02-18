@@ -39,62 +39,66 @@ class BaseModel(Model):
         base_uri = "unknown"
 
 
+class OrdinalModel(BaseModel):
+    ordinal = IntegerField(default=0)
+
+
+class ClassModel(OrdinalModel):
+    class_path = CharField(max_length=1024)
+    context = JSONField(default="{}")
+
+
 class SystemOption(BaseModel):
     key = CharField(max_length=64, unique=True, index=True)
     value = CharField(max_length=255)
+    class Meta:
+        database = database
+        base_uri = "/option"
 
 
-# class ActiveEntity(BaseModel):
-#     uuid = CharField(max_length=64, unique=True, index=True)
-#     last_active = DateTimeField(null=True)
-#     total_packets = IntegerField(default=0)
-#     metadata = JSONField(null=True)
-
-#     class Meta:
-#         order_by = ('uuid', )
+class Sequence(BaseModel):
+    name = CharField(max_length=255)
+    class Meta:
+        database = database
+        base_uri = "/sequence"
 
 
-# class Detector(ActiveEntity):
-#     pass
+class Frame(OrdinalModel):
+    sequence = ForeignKeyField(rel_model=Sequence, related_name="frames")
+    duration_ms = IntegerField(default=1000*5)
+
+    class Meta:
+        database = database
+        base_uri = "/frame"
+        order_by = ['ordinal']
 
 
-# class Beacon(ActiveEntity):
-#     is_accepted = IntegerField(default=0)
+class FrameSprite(ClassModel):
+    frame = ForeignKeyField(rel_model=Frame, related_name="sprites")
+
+    class Meta:
+        database = database
+        base_uri = "/sprite"
+        order_by = ['ordinal']
 
 
-# class Agent(ActiveEntity):
-#     pass
+class FrameSpriteDynamic(ClassModel):
+    sprite = ForeignKeyField(rel_model=FrameSprite, related_name="dynamics")
 
+    class Meta:
+        database = database
+        base_uri = "/dynamic"
+        order_by = ['ordinal']
 
-# class Signal(BaseModel):
-#     date = DateTimeField(default=datetime.utcnow)
-#     detector = ForeignKeyField(rel_model=Detector)
-#     beacon = ForeignKeyField(rel_model=Beacon)
-#     rssi = FloatField()
-#     source_data = CharField(max_length=255, null=True)
-
-
-# class Training(BaseModel):
-#     date = DateTimeField(default=datetime.utcnow)
-#     beacon = ForeignKeyField(rel_model=Beacon)
-#     expectation = JSONField()
-#     is_used = IntegerField(default=1)
-
-#     class Meta:
-#         order_by = ('date', 'expectation', 'beacon')
-
-
-# class TrainingSignal(BaseModel):
-#     training = ForeignKeyField(rel_model=Training, related_name='signals')
-#     signal = ForeignKeyField(rel_model=Signal)
 
 
 def initialize():
     database.connect()
 
     database.create_tables([ SystemOption ], safe=True)
-    # database.create_tables([ Detector, Beacon, Agent ], safe=True)
-    # database.create_tables([ Signal ], safe=True)
-    # database.create_tables([ Training, TrainingSignal ], safe=True)
+    database.create_tables([ Sequence ], safe=True)
+    database.create_tables([ Frame ], safe=True)
+    database.create_tables([ FrameSprite ], safe=True)
+    database.create_tables([ FrameSpriteDynamic ], safe=True)
 
     database.close()

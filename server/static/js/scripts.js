@@ -62,6 +62,24 @@ API = my.Class(pinocchio.Service, {
         this.get("/option", "", callback, this._general_failure);
     },
 
+    set_color: function(uri, hex_colors, callback) {
+        callback = callback || function() {
+            console.log("color set");
+        };
+        this.post(uri, "", JSON.stringify({
+            "pixels": hex_colors
+        }), callback, this._general_failure);
+    },
+    set_color_inner: function(hex_colors, callback) {
+        this.set_color("/presentation/inner", hex_colors, callback);
+    },
+    set_color_outer: function(hex_colors, callback) {
+        this.set_color("/presentation/outer", hex_colors, callback);
+    },
+
+
+
+
     get_beacons: function(callback) {
         this.get("/beacon", "", callback, this._general_failure);
     },
@@ -90,307 +108,63 @@ API = my.Class(pinocchio.Service, {
     }
 });
 
-ConfigManager = my.Class({
+
+SequenceManager = my.Class({
     constructor: function(api) {
         this.api = api;
-
-        this.add_operation_hooks();
-        this.add_reset_hooks();
-
-        this.load();
+        this.init();
     },
+    init: function() {
 
-    add_operation_hooks: function() {
-        var manager = this;
-
-        $("#mode").change(function(){
-            manager.api.set_option("mode", $(this).val(), function() {
-                toastr.success("Mode Set");
-            });
-        });
-
-        $("#training-data").change(function(){
-            manager.api.set_option("training-data", $(this).val(), function() {
-                toastr.success("Training Mode");
-            });
-        });
-
-        $("#filter-data").change(function(){
-            manager.api.set_option("filter-data", $(this).val(), function() {
-                toastr.success("Filter Set");
-            });
-        });
-    },
-
-    add_reset_hooks: function() {
-        var manager = this;
-
-        $(".reset .btn").click(function() {
-            _.each( $(this).attr("resource").split(","), function(target_resource) {
-                manager.api.del("/" + target_resource, "", function(data) {
-                    toastr.success("Deleted {deleted} of resource type {resource}".format({
-                        "deleted": data.deleted || 0,
-                        "resource": target_resource }));
-                }, manager.api._general_failure);
-            });
-        });
-    },
-
-    load: function() {
-        this.api.get_options(function(data) {
-            $("#mode option[value='" + data["mode"] + "']").prop("selected", true);
-            $("#training-data").val(data["training-data"]);
-            $("#filter-data").val(data["filter-data"]);
-        });
     }
 });
 
-ViewManager = my.Class({
-
+SolidColorManager = my.Class({
     constructor: function(api) {
         this.api = api;
-
-        this.add_hooks();
-        this.add_timer();
-
-        this.load();
+        this.init();
     },
+    init: function() {
 
-    add_hooks: function() {
+    }
+});
+
+OmbreColorManager = my.Class({
+    constructor: function(api) {
+        this.api = api;
+        this.init();
     },
-
-    add_timer: function() {
-        var manager = this;
-        this.interval = setInterval(function() {
-            if( $("#refresh:checked").length > 0 ) {
-                manager.load();
-            }
-        }, 5000);
-    },
-
-    load: function() {
-        this.load_beacons();
-        this.load_detectors();
-        this.load_agents();
-    },
-
-    load_beacons: function() {
-        var manager = this;
-        this.api.get_beacons(function(list) {
-            var $tbody = $(".section.beacon table tbody");
-
-            var template = _.template(
-                    "<tr class='show-child-on-hover beacon' beacon='<%- uuid %>'>" +
-                    "    <td><span class='inline-50'>(<%- id %>)</span>" +
-
-                    "        <input type=\"button\" "+
-                    "            class=\"minline-200 beacon-jscolor {valueElement:null,value:'<%- color %>',onFineChange:'check_hook(this)'}\" "+
-                    "            style=\"border:2px solid black\" onchange=\"trigger_change(this)\" "+
-                    "            value=\"<%- uuid %>\" >"+
-                    "        </input> "+
-                    "        <div class='btn btn-sm btn-info btn-train indent-left <% if(!is_accepted) { print(\'hide\'); } %>'>Train</div> " +
-                    "    </td>" +
-                    '    <td><div class="checkbox no-margin"><label><input type="checkbox" <% if(is_accepted) { print(\'checked=\"checked\"\'); } %> ></label></div></td>' +
-                    "    <td><%- last_active %> <%= last_active_icon %></td>" +
-                    "    <td><%- total_packets %></td>" +
-                    "</tr>");
-
-            $tbody.empty();
-            _.each(list, function(item) {
-                manager.add_html_status_icon(item, item.last_active);
-
-                item.metadata = item.metadata || { };
-                item.last_active = format_datetime(item.last_active);
-
-                if( item.metadata.color ) {
-                    item.color = item.metadata.color;
-                } else {
-                    item.color = "ffffff";
-                }
-
-                $tbody.append(template(item));
-            });
-
-            manager.add_beacon_hooks(list);
-
-            jscolor.installByClassName("beacon-jscolor");
-        });
-    },
-    add_beacon_hooks: function(list_of_beacons) {
-        var manager = this;
-
-        $(".beacon .btn-train").click(function() {
-            var $btn = $(this);
-
-            //if the button is disabled, don't do anything
-            if($btn.hasClass("disabled")) {
-                return;
-            }
-
-            //if the button is not disabled, disable and set a re-enable timer
-            $btn.toggleClass("disabled", true);
-            var timeout = setTimeout(function() {
-                $btn.toggleClass("disabled", false);
-                timeout = null;
-            }, 1000);
-
-            var beacon_uuid = $(this).closest(".beacon").attr("beacon");
-            var expectation = JSON.parse( $("#training-data").val() );
-
-            manager.api.create_training_entry(beacon_uuid, expectation, function() {
-                toastr.success("Training entry created.");
-
-                //if the re-enable timer didn't hit, re-enable here
-                if(timeout) {
-                    $btn.toggleClass("disabled", false);
-                    clearTimeout(timeout);
-                    timeout = null;
-                }
-            });
+    init: function() {
+        var self = this;
+        $(".btn.btn-ombre").click(function() {
+            self.set_colors(
+                [ $(".outer-color-solid-lower").val(), $(".outer-color-solid-upper").val() ],
+                [ $(".inner-color-solid-lower").val(), $(".inner-color-solid-upper").val() ]
+            );
         });
 
-        $(".beacon .checkbox input").change(function() {
-            var beacon_uuid = $(this).closest(".beacon").attr("beacon");
-
-            manager.api.set_beacon_checked(beacon_uuid, this.checked, function() {
-                toastr.success("Toggled.");
-            });
-        });
-
-        $(".beacon .beacon-jscolor").click(function() {
-            stop_refreshing();
-        });
-        $(".beacon .beacon-jscolor").on("jscolor-change", function() {
-
-            var beacon_uuid = $(this).closest(".beacon").attr("beacon");
-            var beacon = _.find(list_of_beacons, function(needle) {
-                return needle.uuid == beacon_uuid;
-            });
-
-            var metadata = beacon.metadata || { };
-            metadata["color"] = this.jscolor.toString();
-
-            manager.api.set_beacon_metadata(beacon_uuid, metadata, function() {
-                toastr.success("Metadata Updated.");
-            });
+        $(".btn.btn-solid").click(function() {
+            self.set_colors(
+                [ $(".outer-color-solid").val() ],
+                [ $(".inner-color-solid").val() ]
+            );
         });
     },
-
-    load_detectors: function() {
-        var manager = this;
-
-        this.api.get_detectors(function(list) {
-            var $tbody = $(".section.detector table tbody");
-
-            var template = _.template(
-                    "<tr>" +
-                    "    <td>(<%- id %>) <%- uuid %></td>" +
-                    "    <td><%- load %></td>" +
-                    "    <td><%- last_active %> <%= last_active_icon %></td>" +
-                    "    <td><%- total_packets %></td>" +
-                    "</tr>");
-
-            $tbody.empty();
-            _.each(list, function(item) {
-                item.load = "unknown";
-                if( item.metadata && item.metadata.load ) {
-                    item.load = item.metadata.load;
-                }
-
-                manager.add_html_status_icon(item, item.last_active);
-                item.last_active = format_datetime(item.last_active);
-                $tbody.append(template(item));
-            });
-
-            manager.add_detector_hooks();
-        });
-    },
-    add_detector_hooks: function() {
-    },
-
-    load_agents: function() {
-
-        var manager = this;
-
-        this.api.get_agents(function(list) {
-            var $tbody = $(".section.agent table tbody");
-
-            var template = _.template(
-                    "<tr>" +
-                    "    <td>(<%- id %>) <%- uuid %></td>" +
-                    "    <td><%- runtime %></td>" +
-                    "    <td><%- last_active %> <%= last_active_icon %></td>" +
-                    "    <td><%- sprite_count %></td>" +
-                    "</tr>");
-
-            $tbody.empty();
-            _.each(list, function(item) {
-                item.runtime = "unknown";
-                item.sprite_count = "n/a";
-
-                if( item.metadata ) {
-                    if( item.metadata.runtime_ms ) {
-                        item.runtime = format_ms_duration( parseFloat(item.metadata.runtime_ms) );
-                    }
-
-                    if( item.metadata.sprite_count ) {
-                        item.sprite_count = item.metadata.sprite_count;
-                    }
-                }
-
-                manager.add_html_status_icon(item, item.last_active);
-
-                item.last_active = format_datetime(item.last_active);
-                $tbody.append(template(item));
-            });
-
-            manager.add_agent_hooks();
-        });
-    },
-    add_agent_hooks: function() {
-    },
-
-    add_html_status_icon: function(item, utc_date_string, range) {
-        range = range || 5;
-
-        if( is_in_range(item.last_active, range) ) {
-            item.last_active_icon = this.html_good_icon();
-        } else {
-            item.last_active_icon = this.html_bad_icon();
-        }
-    },
-
-    html_good_icon: function() {
-        return '<span class="glyphicon glyphicon glyphicon-ok text-success" aria-hidden="true"></span>';
-    },
-    html_bad_icon: function() {
-        return '<span class="glyphicon glyphicon glyphicon-remove text-danger" aria-hidden="true"></span>';
+    set_colors: function(inner_colors, outer_colors) {
+        this.api.set_color_inner(inner_colors);
+        this.api.set_color_outer(outer_colors);
     }
 });
 
 
-//placeholders for color changing jscolor events
-stop_refreshing = function() {
-    if( $("#refresh:checked").length > 0 ) {
-        toastr.info("Disabling Automatic Refresh");
-        $("#refresh:checked").click();
-    }
-};
-check_hook = function(element) {
-    var a = 1;
-};
-trigger_change = function(element) {
-    var a =1;
-    //$(this).change();
-};
 
 environment = { };
 
 $(function(){
     environment.service = new API("./api");
-    environment.config = new ConfigManager( environment.service );
-
-    environment.view = new ViewManager( environment.service );
+    environment.sequences = new SequenceManager( environment.service );
+    environment.solids = new SolidColorManager( environment.service );
+    environment.ombre = new OmbreColorManager( environment.service );
 });
 
 

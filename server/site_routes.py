@@ -1,14 +1,19 @@
 from bottle import static_file, route
 from bottle import view
 
+from core.models import Sequence
+
 import logging
 log = logging.getLogger()
 
 
 @route('/')
-@view('menu')
+@view('home')
 def static_index():
-    return dict()
+    template_data = {
+        "sequences": [ s for s in Sequence.select() ]
+    }
+    return template_data
 
 
 @route('/<filename:path>')

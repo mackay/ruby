@@ -1,7 +1,7 @@
-from display import World
+from display.sequence import SequenceWorld
 
 
-class TwoLayerWorld(World):
+class TwoLayerWorld(SequenceWorld):
     OUTER_TRACK = "outer"
     INNER_TRACK = "inner"
 

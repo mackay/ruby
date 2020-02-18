@@ -8,6 +8,7 @@ idna==2.6
 olefile==0.44
 peewee==2.10.2
 Pillow==4.3.0
-pygame==1.9.3
+pygame==1.9.6
+redis==3.4.1
 requests==2.18.4
 urllib3==1.22

@@ -418,3 +418,4 @@ class World(RenderableContainer):
 
     def stop(self):
         self.run_enable = False
+
