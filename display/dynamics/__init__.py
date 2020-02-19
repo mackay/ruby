@@ -186,3 +186,31 @@ class AlphaLifespan(Lifespan):
                                       sprite.color.b_n,
                                       1 - float(self.life_ms) / float(self.ttl_ms) )
 
+
+class FadeIn(Dynamic):
+    def __init__(self, life_ms=5000, random_shift_ms=0):
+        super(FadeIn, self).__init__()
+
+        self.ttl_ms = life_ms + randint(-1*random_shift_ms, random_shift_ms)
+        self.life_ms = 0
+
+    def act_on(self, sprite, world, elapsed_time_ms):
+        super(FadeIn, self).act_on(sprite, world, elapsed_time_ms)
+
+        if self.life_ms >= self.ttl_ms:
+            sprite.alpha = 1
+        else:
+            self.life_ms += elapsed_time_ms
+            sprite.alpha = min(1.0, float(self.life_ms) / float(self.ttl_ms))
+
+
+class FadeOut(FadeIn):
+    def act_on(self, sprite, world, elapsed_time_ms):
+        super(FadeOut, self).act_on(sprite, world, elapsed_time_ms)
+
+        self.life_ms += elapsed_time_ms
+        if self.life_ms > self.ttl_ms:
+            sprite.alpha = 0
+        else:
+            sprite.alpha = 1.0 - float(self.life_ms) / float(self.ttl_ms)
+

@@ -16,6 +16,20 @@
     <!--[if lt IE 9]>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv.js"></script>
     <![endif]-->
+    <style>
+        .color-circle {
+            height: 20px;
+            width: 20px;
+            border: 1px solid #333;
+            border-radius: 16px;
+            display: inline-block;
+
+            transition: all .2s ease-in-out;
+        }
+        .color-circle:hover {
+            transform: scale(1.1);
+        }
+    </style>
 </head>
 
 <body>
@@ -43,7 +57,7 @@
     <div class="container">
 
         <div class="row">
-            <div class="col-md-6">
+            <div class="col-md-4">
                 <h2>Sequences</h2>
                 <select class="sequence-picker">
                     <option value="">Select Sequence</option>
@@ -53,7 +67,7 @@
                 </select>
                 <div class="btn btn-default btn-sequence">Show Sequence</div>
             </div>
-            <div class="col-md-6">
+            <div class="col-md-4">
                 <h2>Blackout</h2>
                 <div class="btn btn-default btn-blackout">Set</div>
 
@@ -68,6 +82,14 @@
                 <div>Inner Color Lower: <input class="jscolor inner-color-solid-lower" value="9b111e"></div>
                 <div>Inner Color Upper: <input class="jscolor inner-color-solid-upper" value="9b111e"></div>
                 <div class="btn btn-default btn-ombre">Set Color</div>
+            </div>
+            <div class="col-md-4">
+                <h2>Quick</h2>
+                <div class="quick-color-container">
+                    % for color in colors:
+                    <span class="color-circle" color="{{color}}" style="background-color:#{{color}}"></span>
+                    % end
+                </div>
             </div>
         </div>
     </div>

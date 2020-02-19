@@ -169,6 +169,13 @@ OmbreColorManager = my.Class({
             self.api.set_sequence($(".sequence-picker").val());
             $('.sequence-picker option:first-child').attr("selected", "selected");
         });
+
+        $(".color-circle").click(function() {
+            $(".inner-color-solid")[0].jscolor.fromString($(this).attr("color"));
+            $(".outer-color-solid")[0].jscolor.fromString($(this).attr("color"));
+
+            $(".btn.btn-solid").click();
+        });
     },
     set_colors: function(inner_colors, outer_colors) {
         this.api.set_color_inner(inner_colors);

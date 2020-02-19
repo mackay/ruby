@@ -112,10 +112,10 @@ class Pixel(object):
         return Pixel(self.r, self.g, self.b, self.a)
 
     def _blend_channel(self, incoming, background, alpha):
-        if alpha == 1:
+        if alpha >= 1:
             return incoming
 
-        if alpha == 0:
+        if alpha <= 0:
             return background
 
         return (incoming - background) * alpha + background
@@ -169,6 +169,79 @@ class Pixel(object):
         return not self.__eq__(other)
 
 
+class WrappedPixel(Pixel):
+    def __init__(self, pixel):
+        self.pixel = pixel
+
+    def set_color(self, r, g, b, a=255):
+        return self.pixel.set_color(r, g, b, a=a)
+
+    def set_color_n(self, r, g, b, a=1):
+        return self.pixel.set_color_n(r, g, b, a=a)
+
+    @property
+    def r(self):
+        return self.pixel.r
+
+    @property
+    def g(self):
+        return self.pixel.g
+
+    @property
+    def b(self):
+        return self.pixel.b
+
+    @property
+    def a(self):
+        return self.pixel.a
+
+    @property
+    def w(self):
+        return self.pixel.w
+
+    @property
+    def r_n(self):
+        return self.pixel.r_n
+
+    @property
+    def g_n(self):
+        return self.pixel.g_n
+
+    @property
+    def b_n(self):
+        return self.pixel.b_n
+
+    @property
+    def a_n(self):
+        return self.pixel.a_n
+
+    @property
+    def w_n(self):
+        return self.pixel.w_n
+
+    def copy(self):
+        return self.pixel.copy()
+
+    def blend(self, other, mask=None, opacity=None, blendfunc=None):
+        return self.pixel.blend(other, mask=mask, opacity=opacity, blendfunc=blendfunc)
+
+    def adjust(self, adjustfunc):
+        return self.pixel.adjust(adjustfunc)
+
+    def __repr__(self):
+        return self.pixel.__repr__()
+
+    def __str__(self):
+        return self.pixel.__str__()
+
+    def __eq__(self, other):
+        return self.pixel.__eq__(other)
+
+    def __ne__(self, other):
+        return not self.pixel.__eq__(other)
+
+
+
 class MaskedPixelBuffer(list):
     def __init__(self, mask, *args, **kwargs):
         super(MaskedPixelBuffer, self).__init__(*args, **kwargs)
@@ -185,6 +258,29 @@ class MaskedPixelBuffer(list):
             if not self.mask[key]:
                 return False
         return super(MaskedPixelBuffer, self).__setitem__(key)
+
+
+class AlphaPixelBuffer(list):
+
+    class AlphaPixelBridge(WrappedPixel):
+        def __init__(self, pixel, alpha):
+            self.__alpha = alpha
+            super(AlphaPixelBuffer.AlphaPixelBridge, self).__init__(pixel)
+
+        def blend(self, other, mask=None, opacity=None, blendfunc=None):
+            opacity = opacity or other.a_n
+            opacity = float(opacity) * float(self.__alpha)
+
+            super(AlphaPixelBuffer.AlphaPixelBridge, self).blend(other, mask=mask, opacity=opacity, blendfunc=blendfunc)
+
+    def __init__(self, alpha, *args, **kwargs):
+        super(AlphaPixelBuffer, self).__init__(*args, **kwargs)
+        self.alpha = alpha
+
+    def __getitem__(self, key):
+        original_pixel = super(AlphaPixelBuffer, self).__getitem__(key)
+        return self.AlphaPixelBridge(original_pixel, self.alpha)
+
 
 
 
@@ -230,6 +326,7 @@ class Sprite(SpriteContainer):
     def __init__(self, position=None):
         super(Sprite, self).__init__()
 
+        self.alpha = 1
         self.mask = None
         self.position = position or 0
 
@@ -243,7 +340,10 @@ class Sprite(SpriteContainer):
 
     def _do_filters(self, pixel_buffer):
         if self.mask:
-            return MaskedPixelBuffer(self.mask, pixel_buffer)
+            pixel_buffer = MaskedPixelBuffer(self.mask, pixel_buffer)
+
+        if self.alpha < 1:
+            pixel_buffer = AlphaPixelBuffer(self.alpha, pixel_buffer)
 
         return pixel_buffer
 

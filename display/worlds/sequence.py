@@ -28,7 +28,6 @@ class SequenceWorld(World):
                 frame = self.frames[0]
                 self.frames = self.frames[1:]
                 self.active_frame_ms = frame["duration_ms"]
-
                 self._show_frame(frame)
 
         return super(SequenceWorld, self).update(elapsed_time_ms)

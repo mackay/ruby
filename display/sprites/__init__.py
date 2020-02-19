@@ -11,13 +11,7 @@ class Point(DynamicSprite):
         super(Point, self)._do_render(pixel_buffer)
 
         if self.is_in_buffer(pixel_buffer):
-            # print "\n" * 3
-            # print "RENDER to " + str(self.position) + " with " + str(self.color)
-            # print "START " + str(pixel_buffer[self.position])
-
             pixel_buffer[self.position].blend(self.color)
-
-            # print "END " + str(pixel_buffer[self.position])
 
 
 class Splotch(DynamicSprite):
