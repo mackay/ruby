@@ -174,7 +174,9 @@ OmbreColorManager = my.Class({
             $(".inner-color-solid")[0].jscolor.fromString($(this).attr("color"));
             $(".outer-color-solid")[0].jscolor.fromString($(this).attr("color"));
 
-            $(".btn.btn-solid").click();
+            if( $(".color-quick-auto:checked").length > 0 ) {
+                $(".btn.btn-solid").click();
+            }
         });
     },
     set_colors: function(inner_colors, outer_colors) {

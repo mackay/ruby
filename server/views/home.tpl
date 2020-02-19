@@ -18,8 +18,8 @@
     <![endif]-->
     <style>
         .color-circle {
-            height: 20px;
-            width: 20px;
+            height: 1.25em;
+            width: 5.7%;
             border: 1px solid #333;
             border-radius: 16px;
             display: inline-block;
@@ -27,6 +27,7 @@
             transition: all .2s ease-in-out;
         }
         .color-circle:hover {
+            cursor: pointer;
             transform: scale(1.1);
         }
     </style>
@@ -57,7 +58,7 @@
     <div class="container">
 
         <div class="row">
-            <div class="col-md-4">
+            <div class="col-sm-5">
                 <h2>Sequences</h2>
                 <select class="sequence-picker">
                     <option value="">Select Sequence</option>
@@ -66,8 +67,7 @@
                     % end
                 </select>
                 <div class="btn btn-default btn-sequence">Show Sequence</div>
-            </div>
-            <div class="col-md-4">
+
                 <h2>Blackout</h2>
                 <div class="btn btn-default btn-blackout">Set</div>
 
@@ -83,8 +83,12 @@
                 <div>Inner Color Upper: <input class="jscolor inner-color-solid-upper" value="9b111e"></div>
                 <div class="btn btn-default btn-ombre">Set Color</div>
             </div>
-            <div class="col-md-4">
+            <div class="col-sm-7">
                 <h2>Quick</h2>
+                <input type="checkbox" class="color-quick-auto" checked>
+                <label> Automatically set ruby color</label>
+                <br/>
+
                 <div class="quick-color-container">
                     % for color in colors:
                     <span class="color-circle" color="{{color}}" style="background-color:#{{color}}"></span>
