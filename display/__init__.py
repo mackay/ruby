@@ -169,6 +169,25 @@ class Pixel(object):
         return not self.__eq__(other)
 
 
+class MaskedPixelBuffer(list):
+    def __init__(self, mask, *args, **kwargs):
+        super(MaskedPixelBuffer, self).__init__(*args, **kwargs)
+        self.mask = mask
+
+    def __getitem__(self, key):
+        if self.mask and len(self.mask) > key:
+            if not self.mask[key]:
+                return Pixel()
+        return super(MaskedPixelBuffer, self).__getitem__(key)
+
+    def __setitem__(self, key):
+        if self.mask and len(self.mask) < key:
+            if not self.mask[key]:
+                return False
+        return super(MaskedPixelBuffer, self).__setitem__(key)
+
+
+
 class DisplayEntity(object):
     def __init__(self):
         self.id = str(uuid.uuid4())
@@ -211,11 +230,25 @@ class Sprite(SpriteContainer):
     def __init__(self, position=None):
         super(Sprite, self).__init__()
 
+        self.mask = None
         self.position = position or 0
 
     def render_to(self, pixel_buffer):
+        pixel_buffer = self._do_filters(pixel_buffer)
+
+        self._do_render(pixel_buffer)
+
         for sprite in self.sprites:
             sprite.render_to(pixel_buffer)
+
+    def _do_filters(self, pixel_buffer):
+        if self.mask:
+            return MaskedPixelBuffer(self.mask, pixel_buffer)
+
+        return pixel_buffer
+
+    def _do_render(self, pixel_buffer):
+        return pixel_buffer
 
     def is_in_buffer(self, pixel_buffer, position=None):
         if position is None:

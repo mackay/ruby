@@ -7,11 +7,11 @@ class SingleColor(DynamicSprite):
         super(SingleColor, self).__init__()
         self.color = color
 
-    def render_to(self, pixel_buffer):
+    def _do_render(self, pixel_buffer):
         for i in range(0, len(pixel_buffer)):
             pixel_buffer[i].blend( self.color )
 
-        super(SingleColor, self).render_to(pixel_buffer)
+        super(SingleColor, self)._do_render(pixel_buffer)
 
 
 class SequenceColor(DynamicSprite):
@@ -19,7 +19,7 @@ class SequenceColor(DynamicSprite):
         super(SequenceColor, self).__init__()
         self.colors = colors
 
-    def render_to(self, pixel_buffer):
+    def _do_render(self, pixel_buffer):
         pixels_per_color = int(math.ceil(len(pixel_buffer) / len(self.colors)))
         for i in range(0, len(pixel_buffer)):
             color_index = int(math.floor( i / pixels_per_color ))
@@ -27,4 +27,4 @@ class SequenceColor(DynamicSprite):
 
             pixel_buffer[i].blend( self.colors[color_index] )
 
-        super(SequenceColor, self).render_to(pixel_buffer)
+        super(SequenceColor, self)._do_render(pixel_buffer)

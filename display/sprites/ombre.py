@@ -15,14 +15,14 @@ class OmbreColor(DynamicSprite):
                               n_pixels,
                               to_shoulder=self.to_shoulder)
 
-    def render_to(self, pixel_buffer):
+    def _do_render(self, pixel_buffer):
         pixel_buffer_len = len(pixel_buffer)
         colors = self._pixel_gradient(pixel_buffer_len)
 
         for i in range(0, pixel_buffer_len):
             pixel_buffer[i].blend( colors[i] )
 
-        super(OmbreColor, self).render_to(pixel_buffer)
+        super(OmbreColor, self)._do_render(pixel_buffer)
 
 
 class OuterInnterOmbre(OmbreColor):

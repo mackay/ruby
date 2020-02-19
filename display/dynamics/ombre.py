@@ -58,3 +58,13 @@ class OmbreMergeFromDynamic(OmbreMergeToDynamic):
                             len(colors) - 1 )
         pixel_choice = min( len(colors) - 1, len(colors) - pixel_choice )
         sprite.to_color = colors[ pixel_choice ]
+
+
+
+class OmbreShiftToDynamic(OmbreMergeToDynamic):
+
+    def _set_color(self, sprite, elapsed_percent, colors):
+
+        pixel_choice = min( int(math.ceil(len(colors) * elapsed_percent)),
+                            len(colors) - 1 )
+        sprite.from_color = colors[ pixel_choice ]

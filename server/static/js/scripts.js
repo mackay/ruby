@@ -76,6 +76,14 @@ API = my.Class(pinocchio.Service, {
     set_color_outer: function(hex_colors, callback) {
         this.set_color("/presentation/outer", hex_colors, callback);
     },
+    set_sequence: function(sequence_id, callback) {
+        callback = callback || function() {
+            console.log("sequence set");
+        };
+        this.post("/presentation/sequence", "", JSON.stringify({
+            "sequence": sequence_id
+        }), callback, this._general_failure);
+    },
 
 
 
@@ -155,6 +163,11 @@ OmbreColorManager = my.Class({
                 [ "000000" ],
                 [ "000000" ]
             );
+        });
+
+        $(".btn.btn-sequence").click(function() {
+            self.api.set_sequence($(".sequence-picker").val());
+            $('.sequence-picker option:first-child').attr("selected", "selected");
         });
     },
     set_colors: function(inner_colors, outer_colors) {

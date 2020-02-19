@@ -88,7 +88,7 @@ class SequenceWorld(World):
         return processed_kwargs
 
     def _process_arg_value(self, value):
-        if value.startswith("Pixel|"):
+        if str(value).startswith("Pixel|"):
             rgb = hex_to_RGB(value.split("|")[-1])
             return Pixel.from_tuple(rgb)
         return value

@@ -53,14 +53,14 @@ class Sky(CloudCover):
 
         super(Sky, self).__init__(clouds=clouds, cloud_color=cloud_color, world_size=world_size)
 
-    def render_to(self, pixel_buffer):
+    def _do_render(self, pixel_buffer):
 
         #paint the sky first
         for i in range(0, len(pixel_buffer)):
             pixel_buffer[i].blend(self.sky_color)
 
         #paint the clouds second
-        super(Sky, self).render_to(pixel_buffer)
+        super(Sky, self)._do_render(pixel_buffer)
 
 
 class Ground(DynamicSprite):
@@ -100,12 +100,12 @@ class Ground(DynamicSprite):
                                                            self.brightness_variance,
                                                            SHIFT_DOWN )
 
-    def render_to(self, pixel_buffer):
+    def _do_render(self, pixel_buffer):
 
         for i in range(0, len(pixel_buffer)):
             pixel_buffer[i].blend( self.ground_buffer[i] )
 
-        super(Ground, self).render_to(pixel_buffer)
+        super(Ground, self)._do_render(pixel_buffer)
 
 
 class Star(Point):

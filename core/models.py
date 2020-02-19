@@ -47,6 +47,14 @@ class ClassModel(OrdinalModel):
     class_path = CharField(max_length=1024)
     context = JSONField(default="{}")
 
+    def to_dict(self):
+        base_dict ={ }
+        for key in self.context:
+            base_dict[key] = self.context[key]
+
+        base_dict["class_path"] = self.class_path
+        return base_dict
+
 
 class SystemOption(BaseModel):
     key = CharField(max_length=64, unique=True, index=True)
@@ -63,6 +71,17 @@ class Sequence(BaseModel):
         base_uri = "/sequence"
 
 
+    def to_dict(self):
+        sequence = {
+            "frames": [ frame.to_dict() for frame in self.frames ]
+        }
+
+        return sequence
+
+    def to_json(self):
+        return json.dumps(self.to_dict())
+
+
 class Frame(OrdinalModel):
     sequence = ForeignKeyField(rel_model=Sequence, related_name="frames")
     duration_ms = IntegerField(default=1000*5)
@@ -73,6 +92,13 @@ class Frame(OrdinalModel):
         order_by = ['ordinal']
 
 
+    def to_dict(self):
+        return {
+            "duration_ms": self.duration_ms,
+            "sprites": [ s.to_dict() for s in self.sprites ]
+        }
+
+
 class FrameSprite(ClassModel):
     frame = ForeignKeyField(rel_model=Frame, related_name="sprites")
 
@@ -80,6 +106,11 @@ class FrameSprite(ClassModel):
         database = database
         base_uri = "/sprite"
         order_by = ['ordinal']
+
+    def to_dict(self):
+        base_dict =super(FrameSprite, self).to_dict( )
+        base_dict["dynamics"] = [ d.to_dict() for d in self.dynamics ]
+        return base_dict
 
 
 class FrameSpriteDynamic(ClassModel):
@@ -89,7 +120,6 @@ class FrameSpriteDynamic(ClassModel):
         database = database
         base_uri = "/dynamic"
         order_by = ['ordinal']
-
 
 
 def initialize():

@@ -7,8 +7,8 @@ class Point(DynamicSprite):
         super(Point, self).__init__(position=position)
         self.color = color
 
-    def render_to(self, pixel_buffer):
-        super(Point, self).render_to(pixel_buffer)
+    def _do_render(self, pixel_buffer):
+        super(Point, self)._do_render(pixel_buffer)
 
         if self.is_in_buffer(pixel_buffer):
             # print "\n" * 3
@@ -46,8 +46,8 @@ class Splotch(DynamicSprite):
         return ( super(Splotch, self).is_in_buffer(pixel_buffer, position=self._start_position) or
                  super(Splotch, self).is_in_buffer(pixel_buffer, position=self._end_position) )
 
-    def render_to(self, pixel_buffer):
-        super(Splotch, self).render_to(pixel_buffer)
+    def _do_render(self, pixel_buffer):
+        super(Splotch, self)._do_render(pixel_buffer)
 
         for i in range(self._start_position, self._end_position + 1):
             if not super(Splotch, self).is_in_buffer(pixel_buffer, position=i):
@@ -65,8 +65,8 @@ class SolidEdgeSplotch(Splotch):
     def __init__(self, color, position, radius, edge_alpha_factor=0.5):
         super(SolidEdgeSplotch, self).__init__(color, position, radius, edge_alpha_factor=edge_alpha_factor)
 
-    def render_to(self, pixel_buffer):
-        super(Splotch, self).render_to(pixel_buffer)
+    def _do_render(self, pixel_buffer):
+        super(Splotch, self)._do_render(pixel_buffer)
 
         for i in range(self._start_position, self._end_position + 1):
             if not super(Splotch, self).is_in_buffer(pixel_buffer, position=i):

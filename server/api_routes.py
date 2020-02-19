@@ -6,7 +6,11 @@ from core.apiutil import require_fields, serialize_json, get_configuration
 from core.models import database
 from core.system import SystemBase
 
+from core.models import Sequence
+
 from display.worlds.split import TwoLayerWorld
+
+from peewee import OperationalError
 
 import redis
 import json
@@ -17,7 +21,10 @@ log = logging.getLogger()
 
 @hook('before_request')
 def before_request():
-    database.connect()
+    try:
+        database.connect()
+    except OperationalError:
+        log.warning("Databse already open on API call")
 
 
 @hook('after_request')
@@ -56,7 +63,11 @@ def create_sequence():
 @post('/presentation/sequence', is_api=True)
 @serialize_json()
 def present_sequence():
-    pass
+    sequence_id = request.json["sequence"]
+    sequence = Sequence.get(Sequence.id == sequence_id)
+
+    r = redis.Redis(host="localhost", port=6379, db=0)
+    r.publish("ruby", sequence.to_json())
 
 
 @post('/presentation/outer', is_api=True)

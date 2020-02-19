@@ -185,3 +185,4 @@ class AlphaLifespan(Lifespan):
                                       sprite.color.g_n,
                                       sprite.color.b_n,
                                       1 - float(self.life_ms) / float(self.ttl_ms) )
+

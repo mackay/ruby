@@ -10,6 +10,8 @@ from core.models import initialize
 from server.site_routes import *
 from server.api_routes import *
 
+from display.scenes.brand import RubyShine
+
 import logging
 log = logging.getLogger()
 
@@ -54,4 +56,7 @@ def main():
 
 if __name__ == "__main__":
     initialize()
+
+    RubyShine().add_to_database()
+
     main()
