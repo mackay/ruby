@@ -27,8 +27,8 @@ import signal
 def world_callback(world):
     return False
 
-PIXELS = 400
-OUTER_PIXELS = 200
+PIXELS = 447
+OUTER_PIXELS = 235
 
 if __name__ == "__main__":
     log.setLevel(logging.INFO)
@@ -45,10 +45,10 @@ if __name__ == "__main__":
     parser.add_argument('--profiler', action="store_true", dest="profiler", default=False,
                         help='Run timing profiler')
 
-    parser.add_argument('--pixels', default="400",
+    parser.add_argument('--pixels', default="447",
                         help='How many pixels in the display')
 
-    parser.add_argument('--outer-pixels', default="200",
+    parser.add_argument('--outer-pixels', default="235",
                         help='Number of pixels in the outer layer')
 
     parser.add_argument('--redis', default=None,

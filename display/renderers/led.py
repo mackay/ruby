@@ -14,7 +14,7 @@ LED_CHANNEL    = 0
 
 
 class NeoPixelRenderer(Renderer):
-    def __init__(self, led_dma=10, led_strip=ws.SK6812W_STRIP):
+    def __init__(self, led_dma=10, led_strip=ws.WS2811_STRIP_GRB):
         super(NeoPixelRenderer, self).__init__()
 
         self.led_dma = 10
