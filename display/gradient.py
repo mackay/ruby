@@ -121,7 +121,18 @@ def bezier_gradient(colors, n_out=100):
 
 
 
+GRADIENT_CACHE = { }
+
+
+def _cache_key(values):
+    cache_string = "::".join([ str(v) for v in values ])
+    return cache_string
+
 def pixel_gradient(from_color, to_color, n_pixels, to_shoulder=0, is_centered=False):
+    key = _cache_key( [ from_color, to_color, n_pixels, to_shoulder, is_centered ] )
+    if key in GRADIENT_CACHE:
+        return GRADIENT_CACHE[key]
+
     from_hex = RGB_to_hex([from_color.r, from_color.g, from_color.b])
     to_hex = RGB_to_hex([to_color.r, to_color.g, to_color.b])
 
@@ -142,6 +153,7 @@ def pixel_gradient(from_color, to_color, n_pixels, to_shoulder=0, is_centered=Fa
         for i in range( len(gradient) - 1, -1, -1) :
             gradient.append(gradient[i])
 
+    GRADIENT_CACHE[key] = gradient
     return gradient
 
 def _int_half_ceiling(val):

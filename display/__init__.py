@@ -118,21 +118,18 @@ class Pixel(object):
         if alpha <= 0:
             return background
 
+        if not background:
+            return incoming * alpha
+
         return (incoming - background) * alpha + background
 
     def blend(self, other, mask=None, opacity=None, blendfunc=None):
         opacity = opacity or other.a_n
 
-        r = self._blend_channel( other.r_n, self.r_n, opacity )
-        g = self._blend_channel( other.g_n, self.g_n, opacity )
-        b = self._blend_channel( other.b_n, self.b_n, opacity )
-
-        self._components = r, g, b, self._components[Pixel.ALPHA_INDEX]
-
-        # self.set_color_n( r, g, b, self.a_n )
-
-        # layer = super(Pixel, self).blend(other, mask, opacity, blendfunc)
-        # self.__set_color_from_layer(layer)
+        self._components = ( self._blend_channel( other.r_n, self.r_n, opacity ),
+                             self._blend_channel( other.g_n, self.g_n, opacity ),
+                             self._blend_channel( other.b_n, self.b_n, opacity ),
+                             self._components[Pixel.ALPHA_INDEX] )
 
     def adjust(self, adjustfunc):
         layer = super(Pixel, self).adjust(adjustfunc)

@@ -1,5 +1,5 @@
 
-IDLE_MIN_MS = 10.0
+IDLE_MIN_MS = 15.0
 
 
 class BaseActionDelegate(object):
