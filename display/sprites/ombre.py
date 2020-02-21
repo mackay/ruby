@@ -19,8 +19,10 @@ class OmbreColor(DynamicSprite):
         pixel_buffer_len = len(pixel_buffer)
         colors = self._pixel_gradient(pixel_buffer_len)
 
+        colors_max_index = len(colors) - 1
+
         for i in range(0, pixel_buffer_len):
-            pixel_buffer[i].blend( colors[i] )
+            pixel_buffer[i].blend( colors[min(i, colors_max_index)] )
 
         super(OmbreColor, self)._do_render(pixel_buffer)
 
